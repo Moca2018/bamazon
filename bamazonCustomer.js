@@ -2,10 +2,10 @@
 
 var mysql = require("mysql")
 var inquirer = require("inquirer")
+var http = require("http")
+
 var connection = mysql.createConnection({
     host: "localhost",
-    // port: ,
-  
     // Your username
     user: "root",
   
@@ -14,6 +14,8 @@ var connection = mysql.createConnection({
     database: "bamazon"
   });
 
+  var PORT = 8080;
+  var server = http.createServer();
 
   ////////////////////////////////////////////////////
   //this function is for to connect to mysql
@@ -22,6 +24,8 @@ var connection = mysql.createConnection({
     console.log("connected as id " + connection.threadId + "\n");
     getTable();
   });
+
+
 
   //this is where i'm suppoosed to see the data come back
   function getTable() {
@@ -33,7 +37,17 @@ var connection = mysql.createConnection({
         connection.end();
       });
 
+
   }
+  
+// /////////////////////////////////////////////clean look ///////
+//   function cleanLook () {
+//     var products = ["item_id", "Product_name", "department_name", "price", "stock_quantity"];
+//     products.toString();
+//     document.getElementById("demo").innerHTML = products;
+// }
+
+
 
 
 ////////////////////////////////////////////////////
@@ -89,7 +103,11 @@ connection.query(query, function(err, res) {
     displayProducts();
 })
 })
+connection.end();
 };
+
+
+
 
 // Starts our server.
 server.listen(PORT, function() {
