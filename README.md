@@ -7,8 +7,6 @@ Bamazon takes in orders from customers and deplete stock from the store's invent
 ## Submission Guide
 
 
-## Instructions
-
 ### Customer View
 
 1. A MySQL Database called `bamazon` was created
