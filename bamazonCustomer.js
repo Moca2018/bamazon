@@ -1,8 +1,9 @@
 //The following is the logic of bamazon
 
-var mysql = require("mysql")
-var inquirer = require("inquirer")
-var http = require("http")
+// Require/import the HTTP module
+var mysql = require("mysql");
+var inquirer = require("inquirer");
+var http = require("http");
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -14,7 +15,7 @@ var connection = mysql.createConnection({
   });
 
 var PORT = 8080;
-var server = http.createServer();
+var server = http.createServer(handleRequest);
 
 ///////////////////////////////////////this function is for to connect to mysql
 connection.connect(function(err) {
@@ -24,6 +25,13 @@ connection.connect(function(err) {
     });
 
 
+
+// Create a generic function to handle requests and responses
+function handleRequest(request, response) {
+
+    // Send the below string to the client when the user visits the PORT URL
+    response.end("It Works!! Path Hit: " + request.url);
+  }
 
 ///////////////////////////this is where i'm suppoosed to see the data come back..
 //console log: What is the ID of the product they would like to buy?
