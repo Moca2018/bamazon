@@ -8,6 +8,15 @@ var inquirer = require("inquirer");
 var http = require("http");
 var PORT = 8080;
 var server = http.createServer(handleRequest);
+
+
+////////////////////////////////function to handle requests and responses//////////////////////
+function handleRequest(request, response) {
+    // Send the below string to the client when the user visits the PORT URL
+    response.end("It Works!! Path Hit: " + request.url);
+    };
+
+///////////////////////////function to connect to mysql/////////////////////////////////////////
 var connection = mysql.createConnection({
     host: "localhost",
     //my username
@@ -17,54 +26,41 @@ var connection = mysql.createConnection({
     database: "bamazon"
   });
 
-///////////////////////////function to connect to mysql/////////////////////////////////////////
+///////////////////////////function to run the table/////////////////////////////////////////
 
 connection.connect(function(err) {
     if (err) throw err;
-    console.log("connected as id " + connection.threadId + "\n");
+    // console.log("connected as id " + connection.threadId + "\n");
     getTable();
-    });
+    })
 
-
-
-////////////////////////////////function to handle requests and responses//////////////////////
-
-
-function handleRequest(request, response) {
-// Send the below string to the client when the user visits the PORT URL
-response.end("It Works!! Path Hit: " + request.url);
-  }
-
+//////////////////////////////function to listen to the Port ////////////////////////////////
+// Starts our server.
+server.listen(PORT, function() {
+    console.log("Server is listening on PORT: " + PORT);
+  });
 
 ////////////////////////////////function to display products ////////////////////////////////
 
-function getTable() {
-    connection.query("SELECT * FROM products", function(err, res) {
-    if (err) throw err;
-    
-//  Log all results of the SELECT statement
-//  console.log(res);
- for (var i = 0; i < res.length; i++) {
- console.log("item_id: " + res[i].item_id + " || product_name: " + res[i].product_name + " || department_name: " + res[i].department_name + " || price: " + res[i].price + " || stock_quantity: " + res[i].stock_quantity);
-}
-order();
-});
-}
-//////////////////////////////function to listen to the Port ////////////////////////////////
+////////////////////////----
 
 
-
-// Starts our server.
-server.listen(PORT, function() {
-  console.log("Server is listening on PORT: " + PORT);
-});
+var getTable = function() {
+    var query = 'SELECT * FROM products'
+    connection.query(query, function(err, res) {
+        for (var i = 0; i < res.length; i++) {
+        console.log("item_id: " + res[i].item_id + " || product_name: " + res[i].product_name + " || department_name: " + res[i].department_name + " || price: " + res[i].price + " || stock_quantity: " + res[i].stock_quantity);
+        }
+        order();
+      })
+  };
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 var order = function() {
     inquirer.prompt([{
-        name: "ProductID",
+        name: "item_id",
         type: "input",
         message: "What is the ID of the product that you would like to buy?",
         
@@ -77,7 +73,7 @@ var order = function() {
             }
         }
     }, {
-        name: "Quantity",
+        name: "stock_quantity",
         type: "input",
         message: "how many units of the product they would like to buy?",
         validate: function(value) {
@@ -88,22 +84,26 @@ var order = function() {
             }
         }
     }]).then(function(answer) {
+
+ 
+//////////////////////////////////////////////////// Display all products
   
-  //////////////////////////////////////////////////// Display all products
-  
-  var query = 'SELECT * FROM Products WHERE itemID=' + answer.Quantity;
+  var query = 'SELECT * FROM products WHERE item_id=' + answer.stock_quantity;
   connection.query(query, function(err, res) {
-    if (answer.Quantity <= res) {
+    if (answer.stock_quantity <= res) {
       for (var i = 0; i < res.length; i++) {
-          console.log("We have available " + res[i].stockQuantity + " " + res[i].productName + ".");
-          console.log("Your order of "+ res[i].stockQuantity + " " + res[i].productName + " is now processing!");
+          console.log("We have available " + res[i].stock_quantity + " " + res[i].product_name + ".");
+          console.log("Your order of "+ res[i].stock_quantity + " " + res[i].product_name + " is now processing!");
         }
       } else {
         console.log("Insufficient quantity!");
       }
-      displayProducts();
+      getTable();
   })
   })
   connection.end();
+
+
+
   };
   
